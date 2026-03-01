@@ -1,0 +1,3 @@
+{
+  "*.{ts,tsx,json,yaml,yml,md,html,css}": ["npx eslint --no-warn-ignored", "npx prettier --write"]
+}
