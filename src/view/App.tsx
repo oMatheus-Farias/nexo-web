@@ -1,10 +1,11 @@
-import { Button } from './components/ui/Button';
+import { BrowserRouter } from 'react-router-dom';
+
+import AppRoutes from '@/app/routes';
 
 export default function App() {
   return (
-    <div>
-      <h1>Welcome to Nexo!</h1>
-      <Button>Click me</Button>
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
