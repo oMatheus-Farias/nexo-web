@@ -5,12 +5,15 @@ import { AuthProvider } from '@/app/contexts/auth/AuthContext';
 import { queryClient } from '@/app/lib/queryClient';
 import AppRoutes from '@/app/routes';
 
+import { Toaster } from './components/ui/Sonner';
+
 export default function App() {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AppRoutes />
+          <Toaster richColors={true} position="bottom-right" duration={6000} theme="dark" />
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>

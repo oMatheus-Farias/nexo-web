@@ -1,6 +1,8 @@
-import { LogOut } from 'lucide-react';
+import { LoaderCircle, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
+import { useAuth } from '@/app/contexts/auth/useAuth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,15 +25,24 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
 import { Badge } from './ui/Badge';
 
 export function DropdownMenuSidebar() {
+  const { signOut, isSignOutPending } = useAuth();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleSignOut = () => {
+  function handleSignOutToggle() {
     setIsDropdownOpen(false);
     setTimeout(() => {
       setIsAlertOpen(true);
     }, 0);
-  };
+  }
+
+  async function handleSignOut() {
+    try {
+      await signOut();
+    } catch {
+      toast.error('Erro ao sair da aplicação. Por favor, tente novamente.');
+    }
+  }
 
   return (
     <>
@@ -55,8 +66,8 @@ export function DropdownMenuSidebar() {
         <DropdownMenuContent align="center" className="w-48 border-[#3A3A3A] bg-[#1D1D1D]">
           <DropdownMenuLabel aria-hidden="true" className="hidden"></DropdownMenuLabel>
           <DropdownMenuItem
-            onSelect={handleSignOut}
-            className="text-[#fb2c36] hover:cursor-pointer hover:bg-[#272727] hover:text-[#fb2c36] focus:bg-[#272727] focus:outline-none"
+            onSelect={handleSignOutToggle}
+            className="text-[#fb2c36] hover:cursor-pointer hover:bg-[#272727] focus:bg-[#272727] focus:outline-none"
           >
             <LogOut color="#fb2c36" />
             Sair
@@ -76,8 +87,21 @@ export function DropdownMenuSidebar() {
             <AlertDialogCancel className="cursor-pointer text-[#E2E2E2]">
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction className="cursor-pointer bg-red-500 hover:bg-red-600">
-              Sair
+            <AlertDialogAction
+              disabled={isSignOutPending}
+              onClick={handleSignOut}
+              className="cursor-pointer bg-red-500 hover:bg-red-600 hover:text-red-500"
+            >
+              {isSignOutPending ? (
+                <LoaderCircle
+                  aria-label="Carregando"
+                  color="white"
+                  size={20}
+                  className="animate-spin"
+                />
+              ) : (
+                'Sair'
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,24 +1,28 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import GlobalSuspense from '@/view/components/GlobalSuspense';
+
 import { ROUTE_PATHS } from './constants/routePaths';
 
 // Layouts
-const LoginLayout = lazy(() => import('@/view/pages/_Layouts/LoginLayout'));
+const AuthLayout = lazy(() => import('@/view/pages/_Layouts/AuthLayout'));
 const UserLayout = lazy(() => import('@/view/pages/_Layouts/UserLayout'));
 
-// Login
-const LoginPage = lazy(() => import('@/view/pages/Login'));
+// Auth
+const LoginPage = lazy(() => import('@/view/pages/Auth/Login'));
+const GoogleCallbackPage = lazy(() => import('@/view/pages/Auth/GoogleCallback'));
 
 // User
 const HomePage = lazy(() => import('@/view/pages/User/Home'));
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<GlobalSuspense />}>
       <Routes>
-        <Route element={<LoginLayout />}>
+        <Route element={<AuthLayout />}>
           <Route path={ROUTE_PATHS.login} element={<LoginPage />} />
+          <Route path={ROUTE_PATHS.googleCallback} element={<GoogleCallbackPage />} />
         </Route>
 
         <Route element={<UserLayout />}>

@@ -10,6 +10,8 @@ export class UserService extends Service {
 
 export namespace UserService {
   export type GetMeDetailsResponse = {
-    username: string;
+    id: string;
+    name: string;
+    avatar_url: string | null;
   };
 }

@@ -1,11 +1,18 @@
 import { useRef } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
+import { ROUTE_PATHS } from '@/app/constants/routePaths';
+import { useAuth } from '@/app/contexts/auth/useAuth';
 import loginImage from '@/view/assets/login-image.png';
 import loginVideo from '@/view/assets/login-video.mp4';
 
-export default function LoginLayout() {
+export default function AuthLayout() {
+  const { signedIn } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  if (signedIn) {
+    return <Navigate to={ROUTE_PATHS.userHome} replace={true} />;
+  }
 
   return (
     <section className="flex h-screen w-full justify-center px-4 py-10">

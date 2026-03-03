@@ -20,7 +20,7 @@ export class AuthService extends Service {
   }
 
   static async signOut(): Promise<void> {
-    await AuthService.client.post('/logout');
+    await AuthService.client.post('/auth/sign-out');
   }
 }
 

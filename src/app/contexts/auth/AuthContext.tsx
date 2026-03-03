@@ -20,9 +20,9 @@ interface ISetupAuthParams {
 
 export function AuthProvider({ children }: IAuthProviderProps) {
   const { me, loadMe } = useMe({ enabled: false });
-  const { startLoginWithGoogleFn } = useStartLoginWithGoogle();
+  const { startLoginWithGoogleFn, isStartLoginWithGooglePending } = useStartLoginWithGoogle();
   const { refreshTokenFn } = useRefreshToken();
-  const { signOutFn } = useSignOut();
+  const { signOutFn, isSignOutPending } = useSignOut();
   const [isReady, setIsReady] = useState(false);
   const queryClient = useQueryClient();
 
@@ -103,8 +103,11 @@ export function AuthProvider({ children }: IAuthProviderProps) {
 
   const value = {
     signedIn: !!me,
+    isStartLoginWithGooglePending,
+    isSignOutPending,
     startLoginWithGoogle,
     loginWithGoogleCallback,
+    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

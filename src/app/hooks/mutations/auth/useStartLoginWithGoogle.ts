@@ -3,9 +3,9 @@ import { useMutation } from '@tanstack/react-query';
 import { AuthService } from '@/app/services/AuthService';
 
 export function useStartLoginWithGoogle() {
-  const { mutateAsync } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: AuthService.startLoginInWithGoogle,
   });
 
-  return { startLoginWithGoogleFn: mutateAsync };
+  return { startLoginWithGoogleFn: mutateAsync, isStartLoginWithGooglePending: isPending };
 }
