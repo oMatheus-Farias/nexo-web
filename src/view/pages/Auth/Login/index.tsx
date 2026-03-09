@@ -55,7 +55,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-14 text-sm">
+      <p className="mt-5 text-sm">
         Criando uma conta, você concorda com todos os nossos{' '}
         <a href="#" className="underline underline-offset-2">
           termos e condições
