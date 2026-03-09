@@ -3,6 +3,7 @@ import { useCallback, useLayoutEffect, useState } from 'react';
 
 import { useRefreshToken } from '@/app/hooks/mutations/auth/useRefreshToken';
 import { useSignOut } from '@/app/hooks/mutations/auth/useSignOut';
+import { useStartLoginWithGitHub } from '@/app/hooks/mutations/auth/useStartLoginWithGitHub';
 import { useStartLoginWithGoogle } from '@/app/hooks/mutations/auth/useStartLoginWithGoogle';
 import { useMe } from '@/app/hooks/queries/user/useMe';
 import { AuthTokensManager } from '@/app/lib/AuthTokensManager';
@@ -21,6 +22,7 @@ interface ISetupAuthParams {
 export function AuthProvider({ children }: IAuthProviderProps) {
   const { me, loadMe } = useMe({ enabled: false });
   const { startLoginWithGoogleFn, isStartLoginWithGooglePending } = useStartLoginWithGoogle();
+  const { startLoginWithGitHubFn, isStartLoginWithGitHubPending } = useStartLoginWithGitHub();
   const { refreshTokenFn } = useRefreshToken();
   const { signOutFn, isSignOutPending } = useSignOut();
   const [isReady, setIsReady] = useState(false);
@@ -86,7 +88,23 @@ export function AuthProvider({ children }: IAuthProviderProps) {
     window.location.href = auth_url;
   }
 
+  async function startLoginWithGitHub() {
+    const { auth_url } = await startLoginWithGitHubFn();
+    window.location.href = auth_url;
+  }
+
   async function loginWithGoogleCallback({
+    accessToken,
+    refreshToken,
+  }: {
+    accessToken: string;
+    refreshToken: string;
+  }) {
+    AuthTokensManager.save({ accessToken, refreshToken });
+    await setupAuth({ accessToken });
+  }
+
+  async function loginWithGitHubCallback({
     accessToken,
     refreshToken,
   }: {
@@ -104,9 +122,12 @@ export function AuthProvider({ children }: IAuthProviderProps) {
   const value = {
     signedIn: !!me,
     isStartLoginWithGooglePending,
+    isStartLoginWithGitHubPending,
     isSignOutPending,
     startLoginWithGoogle,
+    startLoginWithGitHub,
     loginWithGoogleCallback,
+    loginWithGitHubCallback,
     signOut,
   };
 

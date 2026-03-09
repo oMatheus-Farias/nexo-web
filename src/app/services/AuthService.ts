@@ -8,6 +8,13 @@ export class AuthService extends Service {
     return data;
   }
 
+  static async startLoginInWithGitHub(): Promise<AuthService.StartLoginInWithGitHubResponse> {
+    const { data } =
+      await AuthService.client.post<AuthService.StartLoginInWithGitHubResponse>('/auth/github');
+
+    return data;
+  }
+
   static async refreshToken(
     payload: AuthService.RefreshTokenPayload,
   ): Promise<AuthService.RefreshTokenResponse> {
@@ -26,6 +33,11 @@ export class AuthService extends Service {
 
 export namespace AuthService {
   export type StartLoginInWithGoogleResponse = {
+    auth_url: string;
+    message: string;
+  };
+
+  export type StartLoginInWithGitHubResponse = {
     auth_url: string;
     message: string;
   };

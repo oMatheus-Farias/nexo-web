@@ -12,6 +12,7 @@ const UserLayout = lazy(() => import('@/view/pages/_Layouts/UserLayout'));
 // Auth
 const LoginPage = lazy(() => import('@/view/pages/Auth/Login'));
 const GoogleCallbackPage = lazy(() => import('@/view/pages/Auth/GoogleCallback'));
+const GitHubCallbackPage = lazy(() => import('@/view/pages/Auth/GitHubCallback'));
 
 // User
 const HomePage = lazy(() => import('@/view/pages/User/Home'));
@@ -23,6 +24,7 @@ export default function AppRoutes() {
         <Route element={<AuthLayout />}>
           <Route path={ROUTE_PATHS.login} element={<LoginPage />} />
           <Route path={ROUTE_PATHS.googleCallback} element={<GoogleCallbackPage />} />
+          <Route path={ROUTE_PATHS.githubCallback} element={<GitHubCallbackPage />} />
         </Route>
 
         <Route element={<UserLayout />}>

@@ -1,23 +1,17 @@
-import { toast } from 'sonner';
-
-import { useAuth } from '@/app/contexts/auth/useAuth';
 import githubIcon from '@/view/assets/github-icon.svg';
 import googleIcon from '@/view/assets/google-icon.svg';
 import nexoLogo from '@/view/assets/nexo-logo.svg';
 import { Button } from '@/view/components/ui/Button';
 
-export default function LoginPage() {
-  const { startLoginWithGoogle, isStartLoginWithGooglePending } = useAuth();
+import { useLoginController } from './useLoginController';
 
-  async function handleStartLoginWithGoogle() {
-    try {
-      await startLoginWithGoogle();
-    } catch {
-      toast.error(
-        'Ocorreu um erro ao tentar fazer login com o Google. Por favor, tente novamente.',
-      );
-    }
-  }
+export default function LoginPage() {
+  const {
+    handleStartLoginWithGoogle,
+    isStartLoginWithGooglePending,
+    handleStartLoginWithGitHub,
+    isStartLoginWithGitHubPending,
+  } = useLoginController();
 
   return (
     <main className="mx-auto h-full w-full max-w-125 rounded-3xl border border-[#2A2A2A] bg-[#131313] p-8 lg:w-2/5 lg:max-w-full">
@@ -38,6 +32,8 @@ export default function LoginPage() {
       <form className="mt-20 flex w-full flex-col gap-6">
         <Button
           type="button"
+          disabled={isStartLoginWithGitHubPending || isStartLoginWithGooglePending}
+          onClick={handleStartLoginWithGitHub}
           className="duration- flex h-12 w-full cursor-pointer items-center gap-2 rounded-xl border border-[#282828] bg-[#0c0c0c] text-base font-medium text-white transition-all hover:bg-[#181818]"
         >
           <img src={githubIcon} alt="GitHub Icon" className="h-6 w-6" />
@@ -46,7 +42,7 @@ export default function LoginPage() {
 
         <Button
           type="button"
-          disabled={isStartLoginWithGooglePending}
+          disabled={isStartLoginWithGooglePending || isStartLoginWithGitHubPending}
           onClick={handleStartLoginWithGoogle}
           className="duration- flex h-12 w-full cursor-pointer items-center gap-2 rounded-xl bg-[#FBFBFB] text-base font-medium text-gray-500 transition-all"
         >
