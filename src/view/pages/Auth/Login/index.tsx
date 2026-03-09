@@ -1,3 +1,5 @@
+import { LoaderCircle } from 'lucide-react';
+
 import githubIcon from '@/view/assets/github-icon.svg';
 import googleIcon from '@/view/assets/google-icon.svg';
 import nexoLogo from '@/view/assets/nexo-logo.svg';
@@ -36,8 +38,13 @@ export default function LoginPage() {
           onClick={handleStartLoginWithGitHub}
           className="duration- flex h-12 w-full cursor-pointer items-center gap-2 rounded-xl border border-[#282828] bg-[#0c0c0c] text-base font-medium text-white transition-all hover:bg-[#181818]"
         >
-          <img src={githubIcon} alt="GitHub Icon" className="h-6 w-6" />
-          GitHub
+          {!isStartLoginWithGitHubPending && (
+            <img src={githubIcon} alt="GitHub Icon" className="h-6 w-6" />
+          )}
+          {!isStartLoginWithGitHubPending && 'GitHub'}
+          {isStartLoginWithGitHubPending && (
+            <LoaderCircle color="#FFF" size={20} className="animate-spin" />
+          )}
         </Button>
 
         <Button
@@ -46,8 +53,13 @@ export default function LoginPage() {
           onClick={handleStartLoginWithGoogle}
           className="duration- flex h-12 w-full cursor-pointer items-center gap-2 rounded-xl bg-[#FBFBFB] text-base font-medium text-gray-500 transition-all"
         >
-          <img src={googleIcon} alt="Google Icon" className="h-6 w-6" />
-          Google
+          {!isStartLoginWithGooglePending && (
+            <img src={googleIcon} alt="Google Icon" className="h-6 w-6" />
+          )}
+          {!isStartLoginWithGooglePending && 'Google'}
+          {isStartLoginWithGooglePending && (
+            <LoaderCircle color="#6a7282" size={20} className="animate-spin" />
+          )}
         </Button>
       </form>
 
