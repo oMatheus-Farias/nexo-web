@@ -6,16 +6,20 @@ import { queryClient } from '@/app/lib/queryClient';
 import AppRoutes from '@/app/routes';
 
 import { Toaster } from './components/ui/Sonner';
+import { ErrorBoundary } from './pages/ErrorBoundary';
+import ErrorBoundaryFallback from './pages/ErrorBoundary/components/ErrorboundaryFallback';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AppRoutes />
-          <Toaster richColors={true} position="bottom-right" duration={6000} theme="dark" />
-        </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AppRoutes />
+            <Toaster richColors={true} position="bottom-right" duration={6000} theme="dark" />
+          </AuthProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
