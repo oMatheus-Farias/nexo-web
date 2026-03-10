@@ -120,6 +120,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
   }
 
   const value = {
+    me,
     signedIn: !!me,
     isStartLoginWithGooglePending,
     isStartLoginWithGitHubPending,

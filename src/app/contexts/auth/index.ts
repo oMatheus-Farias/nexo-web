@@ -1,6 +1,9 @@
 import { createContext } from 'react';
 
+import type { UserService } from '@/app/services/UserService';
+
 interface IAuthContextValue {
+  me: UserService.GetMeDetailsResponse | undefined;
   signedIn: boolean;
   isStartLoginWithGooglePending: boolean;
   isStartLoginWithGitHubPending: boolean;

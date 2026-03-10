@@ -25,7 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
 import { Badge } from './ui/Badge';
 
 export function DropdownMenuSidebar() {
-  const { signOut, isSignOutPending } = useAuth();
+  const { me, signOut, isSignOutPending } = useAuth();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -51,12 +51,14 @@ export function DropdownMenuSidebar() {
           <div className="flex cursor-pointer items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Avatar className="max-h-6 min-h-6 max-w-6 min-w-6">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AL</AvatarFallback>
+                <AvatarImage src={me?.avatar_url ?? ''} />
+                <AvatarFallback>{me?.name?.charAt(0).toUpperCase() ?? 'NX'}</AvatarFallback>
               </Avatar>
 
-              <div className="flex flex-col items-start">
-                <p className="text-sm font-medium text-[#E2E2E2]">Alex Morgan</p>
+              <div className="flex w-full flex-col items-start">
+                <p className="max-w-23.5 truncate text-sm font-medium text-[#E2E2E2]">
+                  {me?.name ?? 'Nexo'}
+                </p>
               </div>
             </div>
 
@@ -66,10 +68,11 @@ export function DropdownMenuSidebar() {
         <DropdownMenuContent align="center" className="w-48 border-[#3A3A3A] bg-[#1D1D1D]">
           <DropdownMenuLabel aria-hidden="true" className="hidden"></DropdownMenuLabel>
           <DropdownMenuItem
+            variant="destructive"
             onSelect={handleSignOutToggle}
-            className="text-[#fb2c36] hover:cursor-pointer hover:bg-[#272727] focus:bg-[#272727] focus:outline-none"
+            className="cursor-pointer"
           >
-            <LogOut color="#fb2c36" />
+            <LogOut />
             Sair
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -84,18 +87,18 @@ export function DropdownMenuSidebar() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer text-[#E2E2E2]">
+            <AlertDialogCancel className="cursor-pointer border-[#252525] text-[#E2E2E2] hover:bg-[#252525]">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={isSignOutPending}
               onClick={handleSignOut}
-              className="cursor-pointer bg-red-500 hover:bg-red-600 hover:text-red-500"
+              className="cursor-pointer bg-red-500 hover:bg-red-600"
             >
               {isSignOutPending ? (
                 <LoaderCircle
                   aria-label="Carregando"
-                  color="white"
+                  color="#252525"
                   size={20}
                   className="animate-spin"
                 />
