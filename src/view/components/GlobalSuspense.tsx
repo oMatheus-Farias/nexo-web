@@ -1,14 +1,21 @@
+import ShinyText from './ShinyText';
+
 export default function GlobalSuspense() {
   return (
     <div className="flex h-screen w-full items-center justify-center px-5">
-      <div className="flex flex-col items-center gap-4 md:flex-row">
-        <div>
-          <h1 className="text-foreground text-center text-xl font-bold md:text-start">Nexo.</h1>
-          <p className="text-muted-foreground text-center text-sm md:text-start">
-            Aguarde um instante, estamos preparando o seu ambiente...
-          </p>
-        </div>
-      </div>
+      <ShinyText
+        text="Nexo."
+        speed={1}
+        delay={0}
+        color="#b5b5b5"
+        shineColor="#ffffff"
+        spread={120}
+        direction="left"
+        yoyo={true}
+        pauseOnHover={false}
+        disabled={false}
+        className="text-foreground text-center text-3xl font-semibold md:text-start"
+      />
     </div>
   );
 }
