@@ -5,6 +5,9 @@ import GlobalSuspense from '@/view/components/GlobalSuspense';
 
 import { ROUTE_PATHS } from './constants/routePaths';
 
+// Not Found
+const NotFoundPage = lazy(() => import('@/view/pages/NotFound'));
+
 // Layouts
 const AuthLayout = lazy(() => import('@/view/pages/_Layouts/AuthLayout'));
 const UserLayout = lazy(() => import('@/view/pages/_Layouts/UserLayout'));
@@ -30,6 +33,8 @@ export default function AppRoutes() {
         <Route element={<UserLayout />}>
           <Route path={ROUTE_PATHS.userHome} element={<HomePage />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );
