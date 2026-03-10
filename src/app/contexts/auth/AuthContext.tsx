@@ -16,7 +16,7 @@ interface IAuthProviderProps {
 }
 
 interface ISetupAuthParams {
-  accessToken: string;
+  refreshToken: string;
 }
 
 export function AuthProvider({ children }: IAuthProviderProps) {
@@ -30,7 +30,6 @@ export function AuthProvider({ children }: IAuthProviderProps) {
 
   const signOut = useCallback(async () => {
     await signOutFn();
-    Service.removeAccessToken();
     Service.removeRefreshTokenHandler();
 
     queryClient.clear();
@@ -38,8 +37,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
   }, [queryClient, signOutFn]);
 
   const setupAuth = useCallback(
-    async ({ accessToken }: ISetupAuthParams) => {
-      Service.setAccessToken(accessToken);
+    async ({ refreshToken }: ISetupAuthParams) => {
       Service.setRefreshTokenHandler(async () => {
         try {
           const storedTokens = AuthTokensManager.load();
@@ -51,9 +49,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
             refresh_token: storedTokens.refreshToken,
           });
 
-          Service.setAccessToken(newTokens.access_token);
           AuthTokensManager.save({
-            accessToken: newTokens.access_token,
             refreshToken: newTokens.refresh_token,
           });
         } catch (error) {
@@ -62,7 +58,11 @@ export function AuthProvider({ children }: IAuthProviderProps) {
         }
       });
 
-      await loadMe();
+      if (refreshToken) {
+        AuthTokensManager.save({ refreshToken });
+        await loadMe();
+      }
+
       setIsReady(true);
     },
     [loadMe, refreshTokenFn, signOut],
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
         return;
       }
 
-      await setupAuth({ accessToken: tokens.accessToken });
+      await setupAuth({ refreshToken: tokens.refreshToken });
     }
 
     load();
@@ -93,26 +93,12 @@ export function AuthProvider({ children }: IAuthProviderProps) {
     window.location.href = auth_url;
   }
 
-  async function loginWithGoogleCallback({
-    accessToken,
-    refreshToken,
-  }: {
-    accessToken: string;
-    refreshToken: string;
-  }) {
-    AuthTokensManager.save({ accessToken, refreshToken });
-    await setupAuth({ accessToken });
+  async function loginWithGoogleCallback({ refreshToken }: { refreshToken: string }) {
+    await setupAuth({ refreshToken });
   }
 
-  async function loginWithGitHubCallback({
-    accessToken,
-    refreshToken,
-  }: {
-    accessToken: string;
-    refreshToken: string;
-  }) {
-    AuthTokensManager.save({ accessToken, refreshToken });
-    await setupAuth({ accessToken });
+  async function loginWithGitHubCallback({ refreshToken }: { refreshToken: string }) {
+    await setupAuth({ refreshToken });
   }
 
   if (!isReady) {

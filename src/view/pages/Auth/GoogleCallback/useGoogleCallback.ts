@@ -10,11 +10,10 @@ export function useGoogleCallbackContainer() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
     const refreshToken = searchParams.get('refreshToken');
 
-    if (accessToken && refreshToken) {
-      loginWithGoogleCallback({ accessToken, refreshToken });
+    if (refreshToken) {
+      loginWithGoogleCallback({ refreshToken });
       navigate(ROUTE_PATHS.userHome);
     } else {
       navigate(ROUTE_PATHS.login);

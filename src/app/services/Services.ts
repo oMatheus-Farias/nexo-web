@@ -7,15 +7,8 @@ export abstract class Service {
 
   protected static client = axios.create({
     baseURL: env.api.url,
+    withCredentials: true,
   });
-
-  static setAccessToken(accessToken: string) {
-    this.client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-  }
-
-  static removeAccessToken() {
-    this.client.defaults.headers.common.Authorization = undefined;
-  }
 
   static removeRefreshTokenHandler() {
     if (this.refreshTokenInterceptorId !== undefined) {
@@ -40,12 +33,6 @@ export abstract class Service {
         }
 
         await refreshHandler();
-
-        const newToken = this.client.defaults.headers.common.Authorization;
-
-        if (error.config.headers && newToken) {
-          error.config.headers.Authorization = newToken;
-        }
 
         return this.client(error.config);
       },

@@ -10,11 +10,10 @@ export function useGitHubCallbackContainer() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
     const refreshToken = searchParams.get('refreshToken');
 
-    if (accessToken && refreshToken) {
-      loginWithGitHubCallback({ accessToken, refreshToken });
+    if (refreshToken) {
+      loginWithGitHubCallback({ refreshToken });
       navigate(ROUTE_PATHS.userHome);
     } else {
       navigate(ROUTE_PATHS.login);

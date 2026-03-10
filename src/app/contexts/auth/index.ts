@@ -10,8 +10,8 @@ interface IAuthContextValue {
   isSignOutPending: boolean;
   startLoginWithGoogle: () => Promise<void>;
   startLoginWithGitHub: () => Promise<void>;
-  loginWithGoogleCallback: (params: { accessToken: string; refreshToken: string }) => Promise<void>;
-  loginWithGitHubCallback: (params: { accessToken: string; refreshToken: string }) => Promise<void>;
+  loginWithGoogleCallback: (params: { refreshToken: string }) => Promise<void>;
+  loginWithGitHubCallback: (params: { refreshToken: string }) => Promise<void>;
   signOut: () => Promise<void>;
 }
 

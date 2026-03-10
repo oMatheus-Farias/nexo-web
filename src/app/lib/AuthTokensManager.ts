@@ -26,7 +26,6 @@ export class AuthTokensManager {
 
 namespace AuthTokensManager {
   export type Tokens = {
-    accessToken: string;
     refreshToken: string;
   };
 }
