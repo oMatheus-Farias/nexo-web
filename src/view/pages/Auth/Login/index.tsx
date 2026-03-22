@@ -1,8 +1,8 @@
 import { LoaderCircle } from 'lucide-react';
 
-import githubIcon from '@/view/assets/github-icon.svg';
-import googleIcon from '@/view/assets/google-icon.svg';
-import nexoLogo from '@/view/assets/nexo-logo.svg';
+import githubIcon from '@/app/assets/github-icon.svg';
+import googleIcon from '@/app/assets/google-icon.svg';
+import nexoLogo from '@/app/assets/nexo-logo.svg';
 import { Button } from '@/view/components/ui/Button';
 
 import { useLoginController } from './useLoginController';

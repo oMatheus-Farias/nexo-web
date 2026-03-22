@@ -1,4 +1,4 @@
-import nexoLogo from '@/view/assets/nexo-logo.svg';
+import nexoLogo from '@/app/assets/nexo-logo.svg';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

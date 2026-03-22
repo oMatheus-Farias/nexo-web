@@ -1,10 +1,10 @@
 import { useRef } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
+import loginImage from '@/app/assets/login-image.png';
+import loginVideo from '@/app/assets/login-video.mp4';
 import { ROUTE_PATHS } from '@/app/constants/routePaths';
 import { useAuth } from '@/app/contexts/auth/useAuth';
-import loginImage from '@/view/assets/login-image.png';
-import loginVideo from '@/view/assets/login-video.mp4';
 
 export default function AuthLayout() {
   const { signedIn } = useAuth();
