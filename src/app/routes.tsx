@@ -19,6 +19,7 @@ const GitHubCallbackPage = lazy(() => import('@/view/pages/Auth/GitHubCallback')
 
 // User
 const HomePage = lazy(() => import('@/view/pages/User/Home'));
+const RepositoriesPage = lazy(() => import('@/view/pages/User/Repositories'));
 
 export default function AppRoutes() {
   return (
@@ -32,6 +33,7 @@ export default function AppRoutes() {
 
         <Route element={<UserLayout />}>
           <Route path={ROUTE_PATHS.userHome} element={<HomePage />} />
+          <Route path={ROUTE_PATHS.userRepositories} element={<RepositoriesPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
