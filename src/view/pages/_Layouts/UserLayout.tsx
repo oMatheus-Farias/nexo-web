@@ -20,7 +20,7 @@ export default function UserLayout() {
       <div className="flex h-full flex-col lg:ml-56">
         <HeaderDesktop />
 
-        <main className="container mx-auto flex-1 p-6">
+        <main className="container mx-auto flex-1 px-6 pt-20 pb-6">
           <Outlet />
         </main>
 

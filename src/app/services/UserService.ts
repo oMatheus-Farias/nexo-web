@@ -13,5 +13,6 @@ export namespace UserService {
     id: string;
     name: string;
     avatar_url: string | null;
+    is_github_app_installed: boolean;
   };
 }
