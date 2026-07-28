@@ -3,7 +3,7 @@ import { Service } from './Services';
 export class GitHubService extends Service {
   static async getGitHubRepositories(): Promise<GitHubService.GetGitHubRepositoriesResponse> {
     const { data } =
-      await this.client.get<GitHubService.GetGitHubRepositoriesResponse>('/github/repositories');
+      await this.client.get<GitHubService.GetGitHubRepositoriesResponse>('/repositories/paginated');
 
     return data;
   }
@@ -12,19 +12,11 @@ export class GitHubService extends Service {
 export namespace GitHubService {
   export type GetGitHubRepositoriesResponse = {
     repositories: Array<{
-      id: number;
+      id: string;
       name: string;
       full_name: string;
-      private: boolean;
-      owner: {
-        login: string;
-        id: number;
-        avatar_url: string;
-        url: string;
-      };
-      description: string | null;
-      language: string | null;
-      updated_at: string;
+      is_private: boolean;
+      created_at: string;
     }>;
   };
 }

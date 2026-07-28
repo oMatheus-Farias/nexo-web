@@ -109,21 +109,21 @@ export default function RepositoriesPage() {
                 <div className="flex items-center gap-2">
                   <p>{repo.name}</p>
                   <Badge variant="default" className="bg-[#373737] text-[#C6C6C6]">
-                    {repo.private ? 'Privado' : 'Público'}
+                    {repo.is_private ? 'Privado' : 'Público'}
                   </Badge>
                 </div>
 
                 <p className="max-w-3xl text-sm text-[#C6C6C6]">
-                  {repo.description ?? 'Sem descrição'}
+                  {repo.full_name ?? 'Sem descrição'}
                 </p>
 
                 <div className="mt-4 flex items-center gap-4">
                   <p className="text-sm text-[#C6C6C6]">
-                    {repo.language ?? 'Linguagem não especificada'}
+                    {repo.name ?? 'Linguagem não especificada'}
                   </p>
                   <p className="text-sm text-[#C6C6C6]">
                     Última atualização:{' '}
-                    {new Date(repo.updated_at).toLocaleDateString('pt-BR', {
+                    {new Date(repo.created_at).toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: '2-digit',
