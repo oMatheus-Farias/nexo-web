@@ -3,6 +3,8 @@ import {
   Ban,
   CheckCircle2,
   GitBranchPlus,
+  GitCompareArrows,
+  Github,
   LoaderCircle,
   RefreshCw,
   Search,
@@ -18,7 +20,8 @@ import { useSyncRepositories } from '@/app/hooks/mutations/repositories/useSyncR
 import { useSyncRepository } from '@/app/hooks/mutations/repositories/useSyncRepository';
 import { useUpdateRepository } from '@/app/hooks/mutations/repositories/useUpdateRepository';
 import { useGetGitHubRepositories } from '@/app/hooks/queries/gitHub/useGetGitHubRepositories';
-import { useDiscoverRepositories } from '@/app/hooks/queries/repositories/useDiscoverRepositories';
+import { useGitHubRepositories } from '@/app/hooks/queries/gitHub/useGitHubRepositories';
+import { cn } from '@/app/lib/utils';
 import { RepositoryService } from '@/app/services/RepositoryService';
 import { Pagination } from '@/view/components/Pagination';
 import { Badge } from '@/view/components/ui/Badge';
@@ -88,6 +91,7 @@ export default function RepositoriesPage() {
   const searchTerm = searchParams.get('qrepositories') ?? '';
   const pageIndex = getPageIndexFromSearchParams(searchParams);
   const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
+  const [githubRepositorySearchTerm, setGitHubRepositorySearchTerm] = useState('');
   const [selectedRepositoryIds, setSelectedRepositoryIds] = useState<string[]>([]);
   const [reportSheetRepository, setReportSheetRepository] =
     useState<RepositoryService.RepositoryItem | null>(null);
@@ -109,10 +113,10 @@ export default function RepositoriesPage() {
   );
 
   const {
-    discoveredRepositories,
-    isFetchingDiscoveredRepositories,
-    refetchDiscoveredRepositories,
-  } = useDiscoverRepositories({
+    githubRepositories: installRepositories,
+    isFetchingGitHubRepositories: isFetchingInstallRepositories,
+    refetchGitHubRepositories,
+  } = useGitHubRepositories({
     enabled: isDiscoveryOpen && me?.is_github_app_installed === true,
   });
 
@@ -143,6 +147,7 @@ export default function RepositoriesPage() {
     if (source === 'github_app_success') {
       toast.success('Aplicativo do GitHub instalado com sucesso!');
       refetchRepositories();
+      refetchGitHubRepositories();
       clearParams();
     }
 
@@ -155,7 +160,7 @@ export default function RepositoriesPage() {
       toast.error('Ocorreu um erro ao tentar instalar o Github App.');
       clearParams();
     }
-  }, [refetchRepositories, searchParams, setSearchParams]);
+  }, [refetchGitHubRepositories, refetchRepositories, searchParams, setSearchParams]);
 
   function handleSearchTermChange(value: string) {
     setSearchParams(
@@ -189,7 +194,7 @@ export default function RepositoriesPage() {
       await syncRepositoriesFn();
       toast.success('Sincronização geral concluída.');
       await refetchRepositories();
-      await refetchDiscoveredRepositories();
+      await refetchGitHubRepositories();
     } catch {
       toast.error('Não foi possível sincronizar os repositórios agora.');
     }
@@ -200,7 +205,7 @@ export default function RepositoriesPage() {
       await syncRepositoryFn(repositoryId);
       toast.success('Repositório sincronizado.');
       await refetchRepositories();
-      await refetchDiscoveredRepositories();
+      await refetchGitHubRepositories();
     } catch {
       toast.error('Não foi possível sincronizar este repositório.');
     }
@@ -221,7 +226,7 @@ export default function RepositoriesPage() {
       }
 
       await refetchRepositories();
-      await refetchDiscoveredRepositories();
+      await refetchGitHubRepositories();
       toast.success(nextEnabled ? 'Sincronização reativada.' : 'Sincronização pausada.');
     } catch {
       toast.error('Não foi possível atualizar este repositório.');
@@ -243,6 +248,7 @@ export default function RepositoriesPage() {
       const nextValue = !current;
       if (!nextValue) {
         setSelectedRepositoryIds([]);
+        setGitHubRepositorySearchTerm('');
       }
 
       return nextValue;
@@ -267,13 +273,26 @@ export default function RepositoriesPage() {
       await addRepositoriesFn({ external_repo_ids: selectedRepositoryIds });
       toast.success('Repositórios adicionados com sucesso.');
       setSelectedRepositoryIds([]);
+      setGitHubRepositorySearchTerm('');
       setIsDiscoveryOpen(false);
       await refetchRepositories();
-      await refetchDiscoveredRepositories();
+      await refetchGitHubRepositories();
     } catch {
       toast.error('Não foi possível adicionar os repositórios selecionados.');
     }
   }
+
+  const filteredInstallRepositories = installRepositories.filter((repository) => {
+    const search = githubRepositorySearchTerm.trim().toLowerCase();
+
+    if (!search) {
+      return true;
+    }
+
+    return [repository.name, repository.full_name, repository.owner].some((value) =>
+      value.toLowerCase().includes(search),
+    );
+  });
 
   return (
     <article className="h-full w-full">
@@ -306,14 +325,14 @@ export default function RepositoriesPage() {
             size="sm"
             onClick={handleSyncAllRepositories}
             disabled={isBusy || isFetchingGitHubRepositories}
-            className="bg-[#282828] hover:bg-[#333333] focus:bg-[#333333] active:bg-[#333333]"
+            className="bg-[#282828] text-white hover:bg-[#333333] focus:bg-[#333333] active:bg-[#333333]"
           >
             {isSyncRepositoriesPending ? (
               <LoaderCircle className="animate-spin" size={16} color="#fff" />
             ) : (
-              <RefreshCw size={16} color="#fff" />
+              <GitCompareArrows size={16} color="#fff" />
             )}
-            Sincronizar tudo
+            Sincronizar repositórios
           </Button>
 
           <Button
@@ -348,30 +367,30 @@ export default function RepositoriesPage() {
         onOpenChange={handleCloseReportSheet}
         onReportGenerated={async () => {
           await refetchRepositories();
-          await refetchDiscoveredRepositories();
+          await refetchGitHubRepositories();
         }}
       />
 
       {isDiscoveryOpen && (
-        <section className="mt-6 overflow-hidden rounded-[32px] border border-[#2A2A2A] bg-[#171717] shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
-          <div className="border-b border-[#2A2A2A] bg-[radial-gradient(circle_at_top_right,rgba(80,200,120,0.12),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)] px-5 py-5">
+        <section className="border-border/70 bg-card mt-6 overflow-hidden rounded-[32px] border shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
+          <div className="border-border/70 border-b bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)] px-5 py-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-semibold tracking-tight text-white">
                     Adicionar repositórios
                   </h3>
-                  <Badge variant="default" className="bg-[#262626] text-[#C6C6C6]">
-                    {discoveredRepositories.length} disponíveis
+                  <Badge variant="outline" className="border-border bg-background text-foreground">
+                    {filteredInstallRepositories.length} disponíveis
                   </Badge>
-                  <Badge variant="default" className="bg-[#1C3B2A] text-[#7AE2A1]">
+                  <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
                     {selectedRepositoryIds.length} selecionados
                   </Badge>
                 </div>
 
                 <p className="text-muted-foreground max-w-2xl text-sm">
-                  Escolha os repositórios que devem entrar no gerenciamento do Nexo. Você pode
-                  reativar itens já conhecidos ou adicionar novos disponíveis na instalação atual.
+                  Selecione os repositórios da instalação atual do GitHub para sincronizar com o
+                  Nexo sem sair da aplicação.
                 </p>
               </div>
 
@@ -379,12 +398,12 @@ export default function RepositoriesPage() {
                 onClick={handleAddSelectedRepositories}
                 disabled={!selectedRepositoryIds.length || isAddRepositoriesPending}
                 size="sm"
-                className="bg-[#50C878] text-[#101010] hover:bg-[#67da8b] disabled:bg-[#2B2B2B] disabled:text-[#8A8A8A]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
               >
                 {isAddRepositoriesPending ? (
-                  <LoaderCircle className="animate-spin" size={16} color="#101010" />
+                  <LoaderCircle className="animate-spin" size={16} />
                 ) : (
-                  <CheckCircle2 size={16} color="#101010" />
+                  <CheckCircle2 size={16} />
                 )}
                 Adicionar selecionados
               </Button>
@@ -392,86 +411,100 @@ export default function RepositoriesPage() {
           </div>
 
           <div className="px-5 py-5">
-            {isFetchingDiscoveredRepositories ? (
-              <div className="flex items-center gap-2 text-sm text-[#C6C6C6]">
-                <LoaderCircle className="animate-spin" size={16} />
-                Carregando repositórios disponíveis...
+            <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="relative w-full lg:max-w-md">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <Search className="text-muted-foreground h-4 w-4" />
+                </div>
+                <Input
+                  value={githubRepositorySearchTerm}
+                  onChange={(event) => setGitHubRepositorySearchTerm(event.target.value)}
+                  placeholder="Buscar por nome, owner ou repositório"
+                  className="pl-9"
+                />
               </div>
-            ) : discoveredRepositories.length > 0 ? (
-              <div className="grid gap-3 xl:grid-cols-2">
-                {discoveredRepositories.map((repository) => {
-                  const isSelected = selectedRepositoryIds.includes(repository.external_repo_id);
-                  const canSelect = repository.sync_status !== 'SYNCED' || !repository.is_enabled;
-                  const actionLabel =
-                    repository.sync_status === 'SYNCED' && repository.is_enabled
-                      ? 'Ativo'
-                      : repository.local_repository_id
-                        ? 'Reativar'
-                        : 'Adicionar';
+
+              <p className="text-muted-foreground text-sm">
+                Cards enxutos com as informações essenciais para decidir rapidamente.
+              </p>
+            </div>
+
+            {isFetchingInstallRepositories ? (
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                <LoaderCircle className="animate-spin" size={16} />
+                Carregando repositórios do GitHub...
+              </div>
+            ) : filteredInstallRepositories.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {filteredInstallRepositories.map((repository) => {
+                  const isSelected = selectedRepositoryIds.includes(repository.id);
 
                   return (
-                    <div
-                      key={repository.external_repo_id}
-                      className="group relative overflow-hidden rounded-[24px] border border-[#2A2A2A] bg-[#1B1B1B] p-4 transition-colors hover:border-[#3A3A3A] hover:bg-[#1D1D1D]"
+                    <button
+                      key={repository.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => toggleSelectedRepository(repository.id)}
+                      className={cn(
+                        'group flex h-full min-h-44 w-full flex-col justify-between rounded-[24px] border p-4 text-left transition-all outline-none',
+                        isSelected
+                          ? 'border-primary/50 bg-primary/5 shadow-[0_0_0_1px_hsl(var(--primary)/0.15)]'
+                          : 'border-border bg-background hover:border-foreground/20 hover:bg-accent/25',
+                      )}
                     >
-                      <div className="absolute inset-y-0 left-0 w-1 bg-[#50C878]/35 transition-colors group-hover:bg-[#50C878]/70" />
+                      <div className="flex min-w-0 items-start justify-between gap-4">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <div
+                            className={cn(
+                              'flex size-10 shrink-0 items-center justify-center rounded-2xl border transition-colors',
+                              isSelected
+                                ? 'border-primary/20 bg-primary/10 text-primary'
+                                : 'border-border bg-card text-foreground/80',
+                            )}
+                          >
+                            <Github className="size-4" />
+                          </div>
 
-                      <div className="flex min-w-0 flex-col gap-4 pl-3">
-                        <div className="flex min-w-0 flex-col gap-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-base font-medium text-white">
+                          <div className="min-w-0">
+                            <p className="text-foreground truncate text-sm font-medium">
                               {repository.name}
                             </p>
-                            <Badge
-                              variant="default"
-                              className={getStatusBadgeClass(repository.sync_status)}
-                            >
-                              {getStatusLabel(repository.sync_status)}
-                            </Badge>
-                          </div>
-
-                          <p className="truncate text-sm text-[#C6C6C6]">{repository.full_name}</p>
-
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#8E8E8E]">
-                            <span>{repository.owner}</span>
-                            <span>·</span>
-                            <span>{repository.is_private ? 'Privado' : 'Público'}</span>
-                            <span>·</span>
-                            <span>
-                              {repository.local_repository_id
-                                ? 'Já conhecido pelo Nexo'
-                                : 'Novo no Nexo'}
-                            </span>
+                            <p className="text-muted-foreground mt-1 truncate text-sm">
+                              {repository.full_name}
+                            </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="text-xs text-[#8E8E8E]">
-                            {isSelected ? 'Selecionado para adição' : 'Disponível para seleção'}
-                          </p>
-
-                          <Button
-                            size="sm"
-                            variant={isSelected ? 'default' : 'outline'}
-                            disabled={!canSelect}
-                            onClick={() => toggleSelectedRepository(repository.external_repo_id)}
-                            className={
-                              isSelected
-                                ? 'bg-[#50C878] text-[#101010] hover:bg-[#67da8b]'
-                                : 'border-[#2A2A2A] bg-transparent text-white hover:bg-[#262626]'
-                            }
-                          >
-                            {isSelected ? 'Selecionado' : actionLabel}
-                          </Button>
-                        </div>
+                        <Badge
+                          variant="outline"
+                          className="border-border bg-background text-muted-foreground shrink-0 text-xs"
+                        >
+                          {repository.isPrivate ? 'Privado' : 'Público'}
+                        </Badge>
                       </div>
-                    </div>
+
+                      <div className="mt-6 flex items-end justify-between gap-3">
+                        <div className="text-muted-foreground min-w-0 text-xs">
+                          <p className="truncate">Owner: {repository.owner}</p>
+                          <p className="truncate">github.com/{repository.full_name}</p>
+                        </div>
+
+                        <span
+                          className={cn(
+                            'shrink-0 text-xs font-medium transition-colors',
+                            isSelected ? 'text-primary' : 'text-muted-foreground',
+                          )}
+                        >
+                          {isSelected ? 'Selecionado' : 'Selecionar'}
+                        </span>
+                      </div>
+                    </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-[#2A2A2A] bg-[#151515] px-4 py-5 text-sm text-[#C6C6C6]">
-                Nenhum repositório disponível na instalação atual.
+              <div className="border-border bg-background text-muted-foreground rounded-2xl border border-dashed px-4 py-5 text-sm">
+                Nenhum repositório do GitHub foi encontrado para esta instalação.
               </div>
             )}
           </div>

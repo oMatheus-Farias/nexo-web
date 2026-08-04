@@ -4,7 +4,7 @@
 
 ### API principal do Nexo
 
-- Finalidade: autenticar usuarios, recuperar dados do perfil e listar repositorios GitHub.
+- Finalidade: autenticar usuarios, recuperar dados do perfil e listar repositorios GitHub e da instalacao do GitHub App.
 - Direcao: navegador -> backend do Nexo.
 - Modulo responsavel: `src/app/services/*` e hooks de `src/app/hooks/*`.
 - Autenticacao/transporte: `axios` com `baseURL` em `VITE_BASE_API_URL` e `withCredentials: true`.
@@ -20,7 +20,7 @@
   - refresh: envio de `refresh_token`
   - refresh: resposta com `access_token` e `refresh_token`
   - `me`: `id`, `name`, `avatar_url`, `is_github_app_installed`
-  - repositorios: lista com `id`, `name`, `full_name`, `private`, `owner`, `description`, `language`, `updated_at`
+  - repositorios da instalacao: lista com `id`, `name`, `fullName`, `owner`, `isPrivate`, `htmlUrl`
 - Tratamento de erro:
   - queries e mutations nao fazem retry por padrao no `QueryClient`.
   - login e sign out exibem toast na camada de pagina quando necessario.
