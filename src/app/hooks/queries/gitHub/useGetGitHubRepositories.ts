@@ -1,18 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { GitHubService } from '@/app/services/GitHubService';
+import { RepositoryService } from '@/app/services/RepositoryService';
 
 interface IUseGetGitHubRepositoriesParams {
   enabled?: boolean;
 }
 
 export function useGetGitHubRepositories(
-  payload: GitHubService.GetGitHubRepositoriesPayload,
+  payload: RepositoryService.GetRepositoriesPayload,
   params?: IUseGetGitHubRepositoriesParams,
 ) {
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['github-repositories', payload],
-    queryFn: () => GitHubService.getGitHubRepositories(payload),
+    queryFn: () => RepositoryService.getRepositories(payload),
     staleTime: Infinity,
     enabled: params?.enabled ?? true,
   });
