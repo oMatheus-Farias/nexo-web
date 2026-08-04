@@ -14,7 +14,7 @@ export function HeaderDesktop() {
   }
 
   return (
-    <header className="fixed top-0 z-50 container mx-auto hidden max-h-17.75 min-h-17.75 items-center justify-between gap-2 bg-[#131313d2] px-6 text-sm backdrop-blur-xs lg:flex lg:w-[calc(100%-14rem)]">
+    <header className="bg-background sticky top-0 z-50 container mx-auto hidden max-h-17.75 min-h-17.75 items-center justify-between gap-2 px-6 text-center text-sm backdrop-blur-xs lg:flex">
       <img src={nexoLogo} alt="Nexo Logo" className="h-8 w-auto" />
 
       <div className="flex items-center gap-4">

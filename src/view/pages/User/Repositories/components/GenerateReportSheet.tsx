@@ -220,7 +220,7 @@ export function GenerateReportSheet({
         <div className="grid flex-1 gap-4 overflow-hidden px-6 py-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <form
             onSubmit={handleGenerateReport}
-            className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-[28px] border border-[#2A2A2A] bg-[#171717] p-4"
+            className="flex min-h-0 flex-col gap-4 overflow-y-auto"
           >
             <div className="rounded-2xl border border-[#2A2A2A] bg-[#141414] p-4">
               <p className="text-[11px] tracking-[0.14em] text-[#8E8E8E] uppercase">Repositório</p>
@@ -236,7 +236,11 @@ export function GenerateReportSheet({
                     {repository.is_private ? 'Privado' : 'Público'}
                   </Badge>
                   <Badge variant="default" className="bg-[#2A2A2A] text-[#C6C6C6]">
-                    {repository.sync_status}
+                    {repository.sync_status === 'SYNCED' && 'Sincronizado'}
+                    {repository.sync_status === 'PENDING' && 'Sincronizando'}
+                    {repository.sync_status === 'DISCONNECTED' && 'Desconectado'}
+                    {repository.sync_status === 'PAUSED' && 'Pausado'}
+                    {repository.sync_status === 'ERROR' && 'Erro'}
                   </Badge>
                 </div>
               ) : null}
@@ -316,7 +320,7 @@ export function GenerateReportSheet({
               disabled={
                 !repository || !canGenerateReport || isGenerateGithubRepositoryReportPending
               }
-              className="mt-auto bg-[#50C878] text-[#101010] hover:bg-[#67da8b] disabled:bg-[#2B2B2B] disabled:text-[#8A8A8A]"
+              className="mt-auto text-[#101010] disabled:bg-[#2B2B2B] disabled:text-[#8A8A8A]"
             >
               {isGenerateGithubRepositoryReportPending ? (
                 <LoaderCircle className="animate-spin" size={16} color="#101010" />

@@ -411,22 +411,16 @@ export default function RepositoriesPage() {
           </div>
 
           <div className="px-5 py-5">
-            <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div className="relative w-full lg:max-w-md">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Search className="text-muted-foreground h-4 w-4" />
-                </div>
-                <Input
-                  value={githubRepositorySearchTerm}
-                  onChange={(event) => setGitHubRepositorySearchTerm(event.target.value)}
-                  placeholder="Buscar por nome, owner ou repositório"
-                  className="pl-9"
-                />
+            <div className="relative mb-5 w-full">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Search className="text-muted-foreground h-4 w-4" />
               </div>
-
-              <p className="text-muted-foreground text-sm">
-                Cards enxutos com as informações essenciais para decidir rapidamente.
-              </p>
+              <Input
+                value={githubRepositorySearchTerm}
+                onChange={(event) => setGitHubRepositorySearchTerm(event.target.value)}
+                placeholder="Buscar por nome, owner ou repositório"
+                className="w-full pl-9"
+              />
             </div>
 
             {isFetchingInstallRepositories ? (
@@ -446,9 +440,9 @@ export default function RepositoriesPage() {
                       aria-pressed={isSelected}
                       onClick={() => toggleSelectedRepository(repository.id)}
                       className={cn(
-                        'group flex h-full min-h-44 w-full flex-col justify-between rounded-[24px] border p-4 text-left transition-all outline-none',
+                        'group flex h-full w-full cursor-pointer flex-col justify-between rounded-[24px] border p-4 text-left transition-all outline-none',
                         isSelected
-                          ? 'border-primary/50 bg-primary/5 shadow-[0_0_0_1px_hsl(var(--primary)/0.15)]'
+                          ? 'border-sidebar-primary/50 bg-sidebar-primary/5 shadow-[0_0_0_1px_hsl(var(--sidebar-primary)/0.15)]'
                           : 'border-border bg-background hover:border-foreground/20 hover:bg-accent/25',
                       )}
                     >
@@ -456,21 +450,18 @@ export default function RepositoriesPage() {
                         <div className="flex min-w-0 items-start gap-3">
                           <div
                             className={cn(
-                              'flex size-10 shrink-0 items-center justify-center rounded-2xl border transition-colors',
+                              'flex shrink-0 items-center justify-center rounded-lg border p-2 transition-colors',
                               isSelected
-                                ? 'border-primary/20 bg-primary/10 text-primary'
+                                ? 'border-sidebar-primary/20 bg-sidebar-primary/10 text-sidebar-primary'
                                 : 'border-border bg-card text-foreground/80',
                             )}
                           >
-                            <Github className="size-4" />
+                            <Github className="size-2.5" />
                           </div>
 
                           <div className="min-w-0">
                             <p className="text-foreground truncate text-sm font-medium">
                               {repository.name}
-                            </p>
-                            <p className="text-muted-foreground mt-1 truncate text-sm">
-                              {repository.full_name}
                             </p>
                           </div>
                         </div>
