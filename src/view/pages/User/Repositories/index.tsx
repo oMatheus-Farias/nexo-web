@@ -1,5 +1,5 @@
 import { GitBranchPlus, LoaderCircle, RefreshCw, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -25,8 +25,8 @@ function getPageIndexFromSearchParams(searchParams: URLSearchParams) {
 
 export default function RepositoriesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('qrepositories') ?? '');
   const { me } = useAuth();
+  const searchTerm = searchParams.get('qrepositories') ?? '';
   const pageIndex = getPageIndexFromSearchParams(searchParams);
   const { githubRepositories, githubRepositoriesMeta, isFetchingGitHubRepositories, refetch } =
     useGetGitHubRepositories(
@@ -71,21 +71,30 @@ export default function RepositoriesPage() {
   }, [refetch, searchParams, setSearchParams]);
 
   function handleSearchTermChange(value: string) {
-    setSearchTerm(value);
-
-    setSearchParams((prev) => {
-      const nextParams = new URLSearchParams(prev);
-      nextParams.set('page', '1');
-      return nextParams;
-    });
+    setSearchParams(
+      (prev) => {
+        const nextParams = new URLSearchParams(prev);
+        if (value.trim()) {
+          nextParams.set('qrepositories', value);
+        } else {
+          nextParams.delete('qrepositories');
+        }
+        nextParams.set('page', '1');
+        return nextParams;
+      },
+      { replace: true },
+    );
   }
 
   function handlePageChange(nextPageIndex: number) {
-    setSearchParams((prev) => {
-      const nextParams = new URLSearchParams(prev);
-      nextParams.set('page', String(nextPageIndex + 1));
-      return nextParams;
-    });
+    setSearchParams(
+      (prev) => {
+        const nextParams = new URLSearchParams(prev);
+        nextParams.set('page', String(nextPageIndex + 1));
+        return nextParams;
+      },
+      { replace: true },
+    );
   }
 
   return (
