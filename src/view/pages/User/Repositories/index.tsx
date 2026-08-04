@@ -5,25 +5,48 @@ import { toast } from 'sonner';
 
 import { useAuth } from '@/app/contexts/auth/useAuth';
 import { useGetGitHubRepositories } from '@/app/hooks/queries/gitHub/useGetGitHubRepositories';
+import { Pagination } from '@/view/components/Pagination';
 import { Badge } from '@/view/components/ui/Badge';
 import { Button } from '@/view/components/ui/Button';
 import { Input } from '@/view/components/ui/Input';
 import { Toggle } from '@/view/components/ui/Toggle';
 
+const LIMIT_PER_PAGE = 10;
+
+function getPageIndexFromSearchParams(searchParams: URLSearchParams) {
+  const pageParam = Number(searchParams.get('page') ?? '1');
+
+  if (!Number.isFinite(pageParam) || pageParam < 1) {
+    return 0;
+  }
+
+  return pageParam - 1;
+}
+
 export default function RepositoriesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('qcollaborators') ?? '');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('qrepositories') ?? '');
   const { me } = useAuth();
-  const { githubRepositories, isFetchingGitHubRepositories, refetch } = useGetGitHubRepositories({
-    enabled: me?.is_github_app_installed === true,
-  });
+  const pageIndex = getPageIndexFromSearchParams(searchParams);
+  const { githubRepositories, githubRepositoriesMeta, isFetchingGitHubRepositories, refetch } =
+    useGetGitHubRepositories(
+      {
+        page: pageIndex + 1,
+        limitPerPage: LIMIT_PER_PAGE,
+        searchTerm: searchTerm || undefined,
+      },
+      {
+        enabled: me?.is_github_app_installed === true,
+      },
+    );
 
   useEffect(() => {
     function clearParams() {
       setSearchParams((prev) => {
-        prev.delete('source');
-        prev.delete('error');
-        return prev;
+        const nextParams = new URLSearchParams(prev);
+        nextParams.delete('source');
+        nextParams.delete('error');
+        return nextParams;
       });
     }
 
@@ -46,6 +69,24 @@ export default function RepositoriesPage() {
       clearParams();
     }
   }, [refetch, searchParams, setSearchParams]);
+
+  function handleSearchTermChange(value: string) {
+    setSearchTerm(value);
+
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      nextParams.set('page', '1');
+      return nextParams;
+    });
+  }
+
+  function handlePageChange(nextPageIndex: number) {
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      nextParams.set('page', String(nextPageIndex + 1));
+      return nextParams;
+    });
+  }
 
   return (
     <article className="h-full w-full">
@@ -88,7 +129,7 @@ export default function RepositoriesPage() {
             placeholder="Buscar repositórios pelo nome..."
             value={searchTerm}
             className="pl-9"
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchTermChange(e.target.value)}
           />
         </div>
       </div>
@@ -103,7 +144,7 @@ export default function RepositoriesPage() {
           githubRepositories.map((repo) => (
             <div
               key={repo.id}
-              className="flex items-center justify-between rounded-[16px] border border-[#2A2A2A] bg-[#1F1F1F] p-4"
+              className="flex items-center justify-between rounded-3xl border border-[#2A2A2A] bg-[#1F1F1F] p-4"
             >
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
@@ -161,6 +202,17 @@ export default function RepositoriesPage() {
           </p>
         )}
       </div>
+
+      {githubRepositories && githubRepositories.length > 0 && (
+        <div className="mt-8 border-t border-[#2A2A2A] pt-6">
+          <Pagination
+            pageIndex={pageIndex}
+            limit={LIMIT_PER_PAGE}
+            totalCount={githubRepositoriesMeta?.total_count ?? githubRepositories.length}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </article>
   );
 }
