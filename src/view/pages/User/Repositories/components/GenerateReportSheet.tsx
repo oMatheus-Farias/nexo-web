@@ -196,7 +196,7 @@ export function GenerateReportSheet({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="flex h-full w-full max-w-[100vw] flex-col border-l border-[#2A2A2A] bg-[#111111] p-0 text-white sm:max-w-[980px]"
+        className="flex h-full w-full max-w-[100vw] flex-col border-l border-[#2A2A2A] bg-[#111111] p-0 text-white sm:max-w-245"
       >
         <div className="border-b border-[#2A2A2A] bg-[radial-gradient(circle_at_top_right,rgba(80,200,120,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)] px-6 py-5">
           <SheetHeader className="p-0">
