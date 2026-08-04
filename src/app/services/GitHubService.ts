@@ -23,6 +23,7 @@ export namespace GitHubService {
   export type GetGitHubRepositoriesResponse = {
     repositories: Array<{
       id: string;
+      external_repo_id: string;
       name: string;
       full_name: string;
       is_private: boolean;

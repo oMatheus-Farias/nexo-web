@@ -19,7 +19,7 @@ export namespace ReportService {
 
   export type GenerateGithubRepositoryReportPayload = {
     report_style?: ReportStyle;
-    repository_external_id?: string;
+    repository_external_id?: number;
     repository_full_name?: string;
     period_start: string;
     period_end: string;

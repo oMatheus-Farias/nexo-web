@@ -158,7 +158,7 @@ export function GenerateReportSheet({
     try {
       const response = await generateGithubRepositoryReportFn({
         report_style: reportStyle,
-        repository_external_id: repository.id,
+        repository_external_id: Number(repository.external_repo_id),
         period_start: toIsoStartOfDay(periodStart),
         period_end: toIsoEndOfDay(periodEnd),
         max_items_per_type: Number.isFinite(parsedMaxItemsPerType)

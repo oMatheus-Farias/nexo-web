@@ -71,6 +71,7 @@ export namespace RepositoryService {
 
   export type RepositoryItem = {
     id: string;
+    external_repo_id: string;
     name: string;
     full_name: string;
     is_private: boolean;
