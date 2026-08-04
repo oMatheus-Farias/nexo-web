@@ -6,6 +6,7 @@ import {
   LoaderCircle,
   RefreshCw,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -24,6 +25,8 @@ import { Badge } from '@/view/components/ui/Badge';
 import { Button } from '@/view/components/ui/Button';
 import { Input } from '@/view/components/ui/Input';
 import { Toggle } from '@/view/components/ui/Toggle';
+
+import { GenerateReportSheet } from './components/GenerateReportSheet';
 
 const LIMIT_PER_PAGE = 10;
 
@@ -86,6 +89,8 @@ export default function RepositoriesPage() {
   const pageIndex = getPageIndexFromSearchParams(searchParams);
   const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
   const [selectedRepositoryIds, setSelectedRepositoryIds] = useState<string[]>([]);
+  const [reportSheetRepository, setReportSheetRepository] =
+    useState<RepositoryService.RepositoryItem | null>(null);
 
   const {
     githubRepositories,
@@ -223,6 +228,16 @@ export default function RepositoriesPage() {
     }
   }
 
+  function handleOpenReportSheet(repository: RepositoryService.RepositoryItem) {
+    setReportSheetRepository(repository);
+  }
+
+  function handleCloseReportSheet(open: boolean) {
+    if (!open) {
+      setReportSheetRepository(null);
+    }
+  }
+
   function toggleDiscoveryPanel() {
     setIsDiscoveryOpen((current) => {
       const nextValue = !current;
@@ -325,6 +340,17 @@ export default function RepositoriesPage() {
           />
         </div>
       </div>
+
+      <GenerateReportSheet
+        key={reportSheetRepository?.id ?? 'closed'}
+        open={reportSheetRepository !== null}
+        repository={reportSheetRepository}
+        onOpenChange={handleCloseReportSheet}
+        onReportGenerated={async () => {
+          await refetchRepositories();
+          await refetchDiscoveredRepositories();
+        }}
+      />
 
       {isDiscoveryOpen && (
         <section className="mt-6 overflow-hidden rounded-[32px] border border-[#2A2A2A] bg-[#171717] shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
@@ -492,6 +518,18 @@ export default function RepositoriesPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  aria-label="Gerar relatório"
+                  variant="outline"
+                  size="sm"
+                  className="border-[#2A2A2A] bg-[#1B1B1B] text-white hover:bg-[#262626]"
+                  onClick={() => handleOpenReportSheet(repo)}
+                  disabled={repo.sync_status === 'DISCONNECTED' || isBusy}
+                >
+                  <Sparkles size={16} />
+                  Relatório
+                </Button>
+
                 <div className="flex items-center gap-1.5">
                   {repo.sync_status === 'SYNCED' ? (
                     <CheckCircle2 size={14} className="text-[#50C878]" />
