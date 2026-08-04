@@ -328,7 +328,7 @@ export default function RepositoriesPage() {
 
       {isDiscoveryOpen && (
         <section className="mt-6 overflow-hidden rounded-[32px] border border-[#2A2A2A] bg-[#171717] shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
-          <div className="border-b border-[#2A2A2A] bg-[radial-gradient(circle_at_top_right,_rgba(80,200,120,0.12),_transparent_36%),linear-gradient(180deg,_rgba(255,255,255,0.02),_transparent)] px-5 py-5">
+          <div className="border-b border-[#2A2A2A] bg-[radial-gradient(circle_at_top_right,rgba(80,200,120,0.12),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)] px-5 py-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
